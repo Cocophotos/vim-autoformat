@@ -167,15 +167,20 @@ if !exists('g:formatdef_eslint_local')
 	function! g:BuildESLintLocalCmd()
 		let l:path = fnamemodify(expand('%'), ':p')
 		let verbose = &verbose || g:autoformat_verbosemode == 1
+
 		if has('win32')
 			return "(>&2 echo 'ESLint Local not supported on win32')"
 		endif
 		" find formatter & config file
-		let l:prog = findfile('node_modules/.bin/eslint', l:path.";")
-		let l:cfg = findfile('.eslintrc.json', l:path.";")
+		let l:prog = findfile('node_modules/.bin/eslint', ".;")
+		let l:cfg = findfile('.eslintrc.json', ".;")
 		if empty(l:cfg)
-			let l:cfg = findfile('.eslintrc', l:path.";")
+			let l:cfg = findfile('.eslintrc.yml', ".;")
 		endif
+		if empty(l:cfg)
+			let l:cfg = findfile('.eslintrc', ".;")
+		endif
+        
 		if (empty(l:cfg) || empty(l:prog))
 			if verbose
 				return "(>&2 echo 'No local ESLint program and/or config found')"
